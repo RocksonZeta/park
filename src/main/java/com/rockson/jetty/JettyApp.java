@@ -23,10 +23,6 @@ import com.rockson.rest.Middle;
 import com.rockson.rest.Middleware;
 import com.rockson.rest.Next;
 import com.rockson.rest.PatternHandle;
-import com.rockson.rest.Request;
-import com.rockson.rest.Response;
-import com.rockson.rest.utils.Fn2;
-import com.rockson.rest.utils.Fn3;
 import com.rockson.rest.utils.Path;
 
 public class JettyApp extends AbstractHandler implements App {
@@ -36,7 +32,7 @@ public class JettyApp extends AbstractHandler implements App {
 	private final List<Middleware> middlewares = new ArrayList<>();
 
 	// url -> method -> handles
-	public Map<String, Map<String, Handle>> handlers = new HashMap<>();
+	public Map<String, Map<String, Handle>> handles = new HashMap<>();
 	public List<PatternHandle> patternHandles = new ArrayList<PatternHandle>();
 
 	private void doMiddle(JettyRequest req, JettyResponse res, Next next) {
@@ -59,19 +55,21 @@ public class JettyApp extends AbstractHandler implements App {
 	private void doHandle(JettyRequest req, JettyResponse res) {
 		LOG.info("doHandle - " +req.path());
 		Handle handle = null;
-		Map<String, Handle> methodHandles = handlers.get(req.path());
+		Map<String, Handle> methodHandles = handles.get(req.path());
 		if (null != methodHandles) {
+			System.out.println("match url"+req.path());
 			handle = methodHandles.get(req.method());
 		}
 		if (null != handle) {
+			System.out.println("match method"+req.method());
 			handle.apply(req, res);
 			return;
 		}
-		System.out.println("do handle with patterns");
 		for (PatternHandle patternHandle : patternHandles) {
 			Map<String, String> params = patternHandle.match(req.method(), req.path());
 			if (null != params) {
-				req.params = params;
+				System.out.println("match pattern "+ patternHandle);
+				req.params.putAll(params);
 				patternHandle.handle.apply(req, res);
 				break;
 			}
@@ -85,12 +83,14 @@ public class JettyApp extends AbstractHandler implements App {
 		JettyRequest req = new JettyRequest(target, baseRequest, request);
 		JettyResponse res = new JettyResponse(response);
 		Next next = new Next();
-		next.onNext((Throwable e) -> {
+		next.onNext((RuntimeException e) -> {
+			if(null!=e){
+				throw e;
+			}
 			this.doMiddle(req, res, next);
 			return null;
 		});
 		this.doMiddle(req, res, next);
-
 		baseRequest.setHandled(true);
 	}
 
@@ -107,23 +107,22 @@ public class JettyApp extends AbstractHandler implements App {
 			throw new AppException(e);
 		}
 	}
+	
+	private Map<String, String> env = new HashMap<>();
 
 	@Override
 	public void set(String name, String value) {
-		// TODO Auto-generated method stub
-
+		env.put(name, value);
 	}
 
 	@Override
 	public void get(String name) {
-		// TODO Auto-generated method stub
-
+		env.get(name);
 	}
 
 	@Override
 	public void enable(String name) {
-		// TODO Auto-generated method stub
-
+		
 	}
 
 	@Override
@@ -221,20 +220,17 @@ public class JettyApp extends AbstractHandler implements App {
 
 	@Override
 	public void post(String path, Handle handle) {
-		// TODO Auto-generated method stub
-
+		this.method("POST", path, handle);
 	}
 
 	@Override
 	public void put(String path, Handle handle) {
-		// TODO Auto-generated method stub
-
+		this.method("PUT", path, handle);
 	}
 
 	@Override
 	public void del(String path, Handle handle) {
-		// TODO Auto-generated method stub
-
+		this.method("DELETE", path, handle);
 	}
 
 	@Override
@@ -244,13 +240,13 @@ public class JettyApp extends AbstractHandler implements App {
 			method(method, Pattern.compile(Path.pathToReg(path)), handle);
 			return;
 		}
-		if (handlers.containsKey(path)) {
-			Map<String, Handle> methodHandles = handlers.get(path);
+		if (handles.containsKey(path)) {
+			Map<String, Handle> methodHandles = handles.get(path);
 			methodHandles.put(method.toUpperCase(), handle);
 		} else {
 			Map<String, Handle> methodHandles = new HashMap<>();
 			methodHandles.put(method.toUpperCase(), handle);
-			handlers.put(path, methodHandles);
+			handles.put(path, methodHandles);
 		}
 
 	}

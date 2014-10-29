@@ -1,11 +1,17 @@
 package com.rockson.jetty;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.JSONSerializer;
 import com.rockson.rest.AppException;
-import com.rockson.rest.Cookie;
 import com.rockson.rest.Request;
 import com.rockson.rest.Response;
 import com.rockson.rest.utils.Fn2;
@@ -19,62 +25,61 @@ public class JettyResponse implements Response {
 	
 	@Override
 	public void status(int code) {
-		// TODO Auto-generated method stub
-		
+		res.setStatus(code);
 	}
 
 	@Override
 	public void set(String field, String value) {
-		// TODO Auto-generated method stub
-		
+		res.setHeader(field, value);
 	}
 
 	@Override
-	public String get(int field) {
-		// TODO Auto-generated method stub
-		return null;
+	public String get(String field) {
+		return res.getHeader(field);
 	}
 
 	@Override
 	public void cookie(String name, String value) {
-		// TODO Auto-generated method stub
-		
+		Cookie cookie = new Cookie(name, value);
+		this.cookie(cookie);
 	}
 
 	@Override
-	public void cookie(String name, String value, long expires) {
-		// TODO Auto-generated method stub
-		
+	public void cookie(String name, String value, int maxAge) {
+		Cookie cookie = new Cookie(name, value);
+		cookie.setMaxAge(maxAge);
+		this.cookie(cookie);
 	}
 
 	@Override
 	public void cookie(Cookie cookie) {
-		// TODO Auto-generated method stub
-		
+		res.addCookie(cookie);
 	}
 
 	@Override
 	public void clearCookie(String name) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void redirect(String url) {
-		// TODO Auto-generated method stub
+		try {
+			res.sendRedirect(url);
+		} catch (IOException e) {
+			throw new AppException(e);
+		}
 		
 	}
 
 	@Override
 	public void redirect(int status, String url) {
-		// TODO Auto-generated method stub
-		
+		res.setStatus(status);
+		this.redirect(url);
 	}
 
 	@Override
 	public void location(String location) {
-		// TODO Auto-generated method stub
-		
+		res.setHeader("Location", location);
 	}
 	
 	@Override
@@ -89,20 +94,27 @@ public class JettyResponse implements Response {
 
 	@Override
 	public void json(Object body) {
-		// TODO Auto-generated method stub
-		
+		this.type("application/json");
+		try {
+			JSONSerializer.write(res.getWriter(), body);
+		} catch (IOException e) {
+			throw new AppException(e);
+		}
 	}
 
 	@Override
 	public void jsonp(Object body) {
-		// TODO Auto-generated method stub
-		
+		this.send("callback("+JSON.toJSONString(body)+")");
+	}
+	
+	@Override
+	public void jsonp(Object body,String method) {
+		this.send(method+"("+JSON.toJSONString(body)+")");
 	}
 
 	@Override
 	public void type(String type) {
-		// TODO Auto-generated method stub
-		
+		res.setContentType(type);
 	}
 
 	@Override
@@ -114,6 +126,41 @@ public class JettyResponse implements Response {
 	@Override
 	public HttpServletResponse res() {
 		return this.res;
+	}
+
+	@Override
+	public void bufferSize(int size) {
+		res.setBufferSize(size);
+	}
+
+	@Override
+	public void send(InputStream in) {
+		try {
+			IOUtils.copy(in ,res.getOutputStream());
+		} catch (IOException e) {
+			throw new AppException(e);
+		}finally{
+			try {
+				if(null!=in)in.close();
+			} catch (IOException e) {
+				throw new AppException(e);
+			}
+		}
+	}
+
+	@Override
+	public void send(Reader reader) {
+		try {
+			IOUtils.copy(reader, res.getWriter());
+		} catch (IOException e) {
+			throw new AppException(e);
+		}finally{
+			try {
+				if(null!=reader)reader.close();
+			} catch (IOException e) {
+				throw new AppException(e);
+			}
+		}
 	}
 
 	

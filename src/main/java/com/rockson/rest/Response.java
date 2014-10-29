@@ -1,5 +1,9 @@
 package com.rockson.rest;
 
+import java.io.InputStream;
+import java.io.Reader;
+
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
 import com.rockson.rest.utils.Fn2;
@@ -7,9 +11,9 @@ import com.rockson.rest.utils.Fn2;
 public interface Response {
 	void status(int code);
 	void set(String field , String value);
-	String get(int field);
+	String get(String field);
 	void cookie(String name ,String value);
-	void cookie(String name ,String value,long expires);
+	void cookie(String name ,String value, int maxAge);
 	void cookie(Cookie cookie);
 	void clearCookie(String name);
 	void redirect(String url);
@@ -18,7 +22,11 @@ public interface Response {
 	void location(String location);
 	void json(Object body);
 	void jsonp(Object body);
+	void jsonp(Object body,String method);
 	void type(String type);
 	void format(Fn2<Request,Response,String> fn );
 	HttpServletResponse res();
+	void bufferSize(int size);
+	void send(InputStream in);
+	void send(Reader reader);
 }

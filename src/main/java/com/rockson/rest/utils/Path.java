@@ -25,7 +25,7 @@ public class Path {
 		while(matcher.find()){
 			path = matcher.replaceAll("(?<$1>[^/]+)");
 		}
-		return path;
+		return "^"+path+"$";
 	}
 	
 	public static final Pattern GROUP_REG = Pattern.compile("\\((\\?\\<(.+?)\\>)?.*?\\)");

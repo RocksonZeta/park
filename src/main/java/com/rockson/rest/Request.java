@@ -1,15 +1,24 @@
 package com.rockson.rest;
 
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 public interface Request {
-	String params(String name);
+	String getParam(String name ,String... defaultValue);
+	String param(String name);
 	String query(String name);
 	String body(String name);
-	String file(String name);
-	String param(String name,Object... defaultValue);
+	Map<String,String> body();
+	FileField file(String name);
+	List<String> getParams(String name);
+	List<String> queries(String name);
+	List<String> bodies(String name);
+	List<FileField> files(String name);
 	Route route(String name);
-	String cookie(String name);
+	Cookie cookie(String name);
 	String method();
 	Cookie[] cookies();
 	String signedCookies(String name);
@@ -31,5 +40,9 @@ public interface Request {
 	String originalUrl();
 	String baseUrl();
 	HttpServletRequest req();
-
+	Map<String,List<FileField>> files();
+	Map<String, List<String>> fields();
+	Map<String, List<String>> queries();
+	Map<String, String> params();
+	Session session();
 }

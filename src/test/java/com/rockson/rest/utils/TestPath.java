@@ -1,15 +1,11 @@
 package com.rockson.rest.utils;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.junit.Assert;
 import org.junit.Test;
-
-import com.rockson.rest.Fn;
-import com.rockson.rest.PathMatcher;
 
 public class TestPath {
 	@Test
