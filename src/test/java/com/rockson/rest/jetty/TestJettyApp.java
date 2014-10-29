@@ -23,17 +23,7 @@ public class TestJettyApp {
 		app.get("/:name", (req,res)->{
 			res.send(req.param("name"));
 		});
-		app.post("/test/body", (req,res)->{
-//			System.out.println(req.req().get);
-			System.out.println("query string:"+req.req().getQueryString());
-			try {
-				System.out.println("body");
-				IOUtils.copy(req.req().getInputStream(), System.out);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			System.out.println(req.req().getParameterMap());
-			System.out.println("test body");
+		app.post("/test", (req,res)->{
 			res.json(req.body());
 		});
 		app.listen();
