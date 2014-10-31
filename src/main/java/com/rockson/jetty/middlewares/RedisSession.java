@@ -8,8 +8,7 @@ public class RedisSession {
 	
 	public Middle apply() {
 		return  (req ,res,next)->{
-			next.apply(null);
-			return true;
+			next.apply();
 		};
 	}
 }

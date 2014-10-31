@@ -3,6 +3,7 @@ package com.rockson.jetty;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.util.Map;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -14,10 +15,12 @@ import com.alibaba.fastjson.serializer.JSONSerializer;
 import com.rockson.rest.AppException;
 import com.rockson.rest.Request;
 import com.rockson.rest.Response;
+import com.rockson.rest.ViewRender;
 import com.rockson.rest.utils.Fn2;
 
 public class JettyResponse implements Response {
 	public final HttpServletResponse res;
+	protected ViewRender viewRender; 
 	
 	public JettyResponse(HttpServletResponse response) {
 		this.res = response;
@@ -41,6 +44,7 @@ public class JettyResponse implements Response {
 	@Override
 	public void cookie(String name, String value) {
 		Cookie cookie = new Cookie(name, value);
+		cookie.setPath("/");
 		this.cookie(cookie);
 	}
 
@@ -86,6 +90,7 @@ public class JettyResponse implements Response {
 	public void send(String body) {
 		try {
 			this.res.getWriter().print(body);
+			this.res.getWriter().flush();
 		} catch (IOException e) {
 			throw new AppException(e);
 		}
@@ -95,11 +100,7 @@ public class JettyResponse implements Response {
 	@Override
 	public void json(Object body) {
 		this.type("application/json");
-		try {
-			JSONSerializer.write(res.getWriter(), body);
-		} catch (IOException e) {
-			throw new AppException(e);
-		}
+		this.send(JSON.toJSONString(body));
 	}
 
 	@Override
@@ -161,6 +162,16 @@ public class JettyResponse implements Response {
 				throw new AppException(e);
 			}
 		}
+	}
+	
+	@Override
+	public void render(String tpl , Map<String, ?> data){
+		this.send(this.viewRender.render(tpl, data));
+	}
+	
+	@Override
+	public void setViewRender(ViewRender render) {
+		this.viewRender = render;
 	}
 
 	

@@ -1,19 +1,21 @@
 package com.rockson.rest;
 
-import com.rockson.rest.utils.Fn1;
 
 
 public class Next {
-	private Fn1<RuntimeException,Void> cb;
+	private NextFn cb;
 	public int count = 0;
 	
-	public void apply(RuntimeException e){
-		cb.apply(e);
+	public void apply(){
+		cb.apply();
 	}
 	
-	public void onNext(Fn1<RuntimeException,Void> fn){
+	public void onNext(NextFn fn){
 		this.cb = fn;
 	}
 
-
+	@FunctionalInterface
+	public interface NextFn{
+		void apply();
+	}
 }

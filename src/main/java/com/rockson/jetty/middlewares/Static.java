@@ -23,10 +23,10 @@ public class Static {
 				} catch (FileNotFoundException e) {
 					throw new AppException(e);
 				}
-				return false;
+				return ;
 			}
-			next.apply(null);
-			return true;
+			next.apply();
+			return ;
 		};
 	}
 }

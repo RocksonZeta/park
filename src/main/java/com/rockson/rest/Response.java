@@ -2,6 +2,7 @@ package com.rockson.rest;
 
 import java.io.InputStream;
 import java.io.Reader;
+import java.util.Map;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -29,4 +30,6 @@ public interface Response {
 	void bufferSize(int size);
 	void send(InputStream in);
 	void send(Reader reader);
+	void render(String tpl , Map<String, ?> data);
+	void setViewRender(ViewRender render);
 }

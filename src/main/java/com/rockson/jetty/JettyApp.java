@@ -40,24 +40,19 @@ public class JettyApp extends AbstractHandler implements App {
 			doHandle(req, res);
 			return;
 		}
-
 		Middleware middleware = middlewares.get(next.count);
 		next.count++;
 		if (middleware.match(req.method(), req.path())) {
-			if (!middleware.middle.apply(req, res, next)) {
-				return;
-			}
+			middleware.middle.apply(req, res, next);
 		} else {
 			doMiddle(req, res, next);
 		}
 	}
 
 	private void doHandle(JettyRequest req, JettyResponse res) {
-		LOG.info("doHandle - " +req.path());
 		Handle handle = null;
 		Map<String, Handle> methodHandles = handles.get(req.path());
 		if (null != methodHandles) {
-			System.out.println("match url"+req.path());
 			handle = methodHandles.get(req.method());
 		}
 		if (null != handle) {
@@ -69,7 +64,7 @@ public class JettyApp extends AbstractHandler implements App {
 			Map<String, String> params = patternHandle.match(req.method(), req.path());
 			if (null != params) {
 				System.out.println("match pattern "+ patternHandle);
-				req.params.putAll(params);
+				req.setParams(params);
 				patternHandle.handle.apply(req, res);
 				break;
 			}
@@ -83,12 +78,9 @@ public class JettyApp extends AbstractHandler implements App {
 		JettyRequest req = new JettyRequest(target, baseRequest, request);
 		JettyResponse res = new JettyResponse(response);
 		Next next = new Next();
-		next.onNext((RuntimeException e) -> {
-			if(null!=e){
-				throw e;
-			}
+		next.onNext(() -> {
 			this.doMiddle(req, res, next);
-			return null;
+//			return true;
 		});
 		this.doMiddle(req, res, next);
 		baseRequest.setHandled(true);

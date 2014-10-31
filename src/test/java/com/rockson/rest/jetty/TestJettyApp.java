@@ -1,9 +1,11 @@
 package com.rockson.rest.jetty;
 
-import org.apache.commons.io.IOUtils;
+import java.util.HashMap;
 
 import com.rockson.jetty.JettyApp;
 import com.rockson.jetty.middlewares.BodyParser;
+import com.rockson.jetty.middlewares.LocalSession;
+import com.rockson.jetty.middlewares.ParkFreeMarker;
 import com.rockson.jetty.middlewares.Static;
 import com.rockson.rest.App;
 
@@ -12,18 +14,33 @@ public class TestJettyApp {
 	public static void main(String[] args) {
 		App app = new JettyApp(8000);
 		app.use((req,res,next)->{
-			next.apply(null);
-			return true;
+			System.out.println(req.path()+" --->m1");
+			next.apply();
+			System.out.println(req.path()+" m1--->");
+		});
+		app.use("/haha",(req,res,next)->{
+			res.json("haha");
+//			next.apply();
 		});
 		app.use(new Static("/").apply());
 		app.use(new BodyParser().apply());
+		app.use(new LocalSession().apply());
+		app.use(new ParkFreeMarker(new HashMap<String, Object>(){{put("dir","/");}}).apply());
 		app.get("/", (req,res)->{
 			res.send("hello");
 		});
 		app.get("/:name", (req,res)->{
-			res.send(req.param("name"));
+			
+			if(req.session().contains("count")){
+				req.session().set("count", (Integer)(req.session().get("count"))+1);
+			}else{
+				req.session().set("count", 1);
+			}
+			res.cookie("name", "jim");
+//			res.send(req.param("name")+req.session().get("count"));
+			res.render("/hello1.txt", req.params());
 		});
-		app.post("/test", (req,res)->{
+		app.post("/test/body", (req,res)->{
 			res.json(req.body());
 		});
 		app.listen();

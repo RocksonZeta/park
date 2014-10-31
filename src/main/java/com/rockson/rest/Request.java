@@ -45,4 +45,15 @@ public interface Request {
 	Map<String, List<String>> queries();
 	Map<String, String> params();
 	Session session();
+	void session(Session session);
+	Map<Object , Object> var();
+	Object var(Object key);
+	void var(Object key,Object value);
+	
+	void setParams(Map<String, String> params);
+	void setQueries(Map<String, List<String>> queries);
+	void setFields(Map<String, List<String>> fields);
+	void setFiles(Map<String, List<FileField>> files);
+	
+	
 }
