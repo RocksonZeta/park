@@ -9,7 +9,7 @@ import java.util.Map.Entry;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
-public abstract class AbstractRequest implements Request {
+public class ServletRequest implements Request {
 	
 	public Session session;
 
@@ -36,7 +36,13 @@ public abstract class AbstractRequest implements Request {
 	 */
 	protected Map<String,List<FileField>> files; 
 	
+	public ServletRequest() {
+	}
 	
+	public ServletRequest(HttpServletRequest req) {
+		this.req = req;
+	}
+
 	@Override
 	public String getParam(String name, String... defaultValue) {
 		String value = params.get(name);

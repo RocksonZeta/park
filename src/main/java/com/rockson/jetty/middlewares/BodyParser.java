@@ -18,8 +18,8 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.IOUtils;
 
-import com.rockson.jetty.JettyFileField;
 import com.rockson.rest.AppException;
+import com.rockson.rest.BasicFileField;
 import com.rockson.rest.FileField;
 import com.rockson.rest.Middle;
 import com.rockson.rest.utils.CollectionUtils;
@@ -114,7 +114,7 @@ public class BodyParser {
 		return map;
 	}
 
-	protected JettyFileField processUploadedFile(FileItem item) {
+	protected BasicFileField processUploadedFile(FileItem item) {
 		String fieldName = item.getFieldName();
 		String fileName = item.getName();
 		File dir = new File(null == this.conf.get("tmpDir") ? this.conf.get("tmpDir").toString()
@@ -132,7 +132,7 @@ public class BodyParser {
 		} catch (IOException e) {
 			throw new AppException(e);
 		}
-		return new JettyFileField(fieldName, item.getContentType(), file.getAbsolutePath(), item.getSize(), fileName);
+		return new BasicFileField(fieldName, item.getContentType(), file.getAbsolutePath(), item.getSize(), fileName);
 	}
 
 }
