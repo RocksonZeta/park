@@ -24,8 +24,7 @@ public static void main(String[] args) {
 	app.get("/", (req,res)->{
 		res.send("hello");
 	});
-	app.get("/:name", (req,res)->{
-		
+	app.get("/:name", (req,res)->{ 
 		if(req.session().contains("count")){
 			req.session().set("count", (Integer)(req.session().get("count"))+1);
 		}else{
