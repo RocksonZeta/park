@@ -13,10 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 import com.rockson.rest.utils.Path;
 
 public interface BasicApp extends App {
-//	default final List<Middleware> middlewares = new ArrayList<>();
-
-//	default Map<String, Map<String, Handle>> handles = new HashMap<>();
-//	default List<PatternHandle> patternHandles = new ArrayList<PatternHandle>();
 	
 	List<Middleware> getMiddlewares();
 	// url -> method -> handles
@@ -79,8 +75,6 @@ public interface BasicApp extends App {
 	default void listen() {
 	}
 	
-//	private Map<String, String> env = new HashMap<>();
-
 	@Override
 	default void set(String name, String value) {
 		getEnv().put(name, value);
@@ -98,19 +92,16 @@ public interface BasicApp extends App {
 
 	@Override
 	default void enabled(String name) {
-		// TODO Auto-generated method stub
-
+		
 	}
 
 	@Override
 	default void disable(String name) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	default void disabled(String name) {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -131,55 +122,46 @@ public interface BasicApp extends App {
 
 	@Override
 	default void engine(String path) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	default void param(String path) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	default void routing(String path) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	default void route(String path) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	default void locales(String path) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	default void render(String path) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	default void path(String path) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	default void mountPath(String path) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	default void onMount(String path) {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -224,22 +206,22 @@ public interface BasicApp extends App {
 
 	@Override
 	default void get(Pattern regPath, Handle handle) {
-
+		this.method("GET", regPath, handle);
 	}
 
 	@Override
 	default void post(Pattern regPath, Handle handle) {
-
+		this.method("POST", regPath, handle);
 	}
 
 	@Override
 	default void put(Pattern regPath, Handle handle) {
-
+		this.method("PUT", regPath, handle);
 	}
 
 	@Override
 	default void del(Pattern regPath, Handle handle) {
-
+		this.method("DELETE", regPath, handle);
 	}
 
 	@Override

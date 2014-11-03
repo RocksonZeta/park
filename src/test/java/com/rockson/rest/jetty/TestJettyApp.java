@@ -14,9 +14,12 @@ public class TestJettyApp {
 	public static void main(String[] args) {
 		App app = new JettyApp(8000);
 		app.use((req,res,next)->{
-			System.out.println(req.path()+" --->m1");
-			next.apply();
-			System.out.println(req.path()+" m1--->");
+			try{
+				next.apply();
+			} catch(Exception e){
+				System.out.println(e.getClass());
+//				e.printStackTrace();
+			}
 		});
 		app.use("/haha",(req,res,next)->{
 			res.json("haha");
