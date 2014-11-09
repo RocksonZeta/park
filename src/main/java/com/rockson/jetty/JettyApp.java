@@ -12,8 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
-import org.eclipse.jetty.util.log.Log;
-import org.eclipse.jetty.util.log.Logger;
 
 import com.rockson.rest.AppException;
 import com.rockson.rest.BasicApp;
@@ -22,21 +20,20 @@ import com.rockson.rest.Middleware;
 import com.rockson.rest.PatternHandle;
 
 public class JettyApp extends AbstractHandler implements BasicApp {
-	private static final Logger LOG = Log.getLogger(JettyApp.class);
 
-	public final Server server;
-	private final List<Middleware> middlewares = new ArrayList<>();
+	public Server server;
+	private List<Middleware> middlewares = new ArrayList<>();
 
 	// url -> method -> handles
 	public Map<String, Map<String, Handle>> handles = new HashMap<>();
 	public List<PatternHandle> patternHandles = new ArrayList<PatternHandle>();
 
-	private Map<String, String> env = new HashMap<>();
+	private Map<String, Object> env = new HashMap<>();
 
 	@Override
 	public void handle(String target, org.eclipse.jetty.server.Request baseRequest, HttpServletRequest request,
 			HttpServletResponse response) throws IOException, ServletException {
-		this.exec(request,response);
+		this.handle(request,response);
 		baseRequest.setHandled(true);
 	}
 
@@ -44,6 +41,9 @@ public class JettyApp extends AbstractHandler implements BasicApp {
 		server = new Server(port);
 		server.setHandler(this);
 	}
+	public JettyApp() {
+	}
+
 
 	@Override
 	public void listen() {
@@ -64,13 +64,14 @@ public class JettyApp extends AbstractHandler implements BasicApp {
 		return this.patternHandles;
 	}
 	@Override
-	public Map<String, String> getEnv(){
+	public Map<String, Object> getEnv(){
 		return this.env;
 	}
 	@Override
 	public List<Middleware> getMiddlewares() {
 		return this.middlewares;
 	}
+	
 
 	
 }

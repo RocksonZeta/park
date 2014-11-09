@@ -37,6 +37,8 @@ public interface Request {
 	String protocol();
 	boolean secure();
 	String[] subdomains();
+	String url();
+	String url(String url);
 	String originalUrl();
 	String baseUrl();
 	HttpServletRequest req();

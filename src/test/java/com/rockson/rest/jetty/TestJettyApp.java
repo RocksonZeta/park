@@ -1,6 +1,7 @@
 package com.rockson.rest.jetty;
 
 import java.util.HashMap;
+import java.util.regex.Pattern;
 
 import com.rockson.jetty.JettyApp;
 import com.rockson.jetty.middlewares.BodyParser;
@@ -18,12 +19,18 @@ public class TestJettyApp {
 				next.apply();
 			} catch(Exception e){
 				System.out.println(e.getClass());
-//				e.printStackTrace();
+				e.printStackTrace();
 			}
 		});
-		app.use("/haha",(req,res,next)->{
-			res.json("haha");
-//			next.apply();
+		app.use((req,res,next)->{
+			long begin = System.currentTimeMillis(); 
+			next.apply();
+			long end = System.currentTimeMillis();
+			System.out.printf("%s %s +%dms\n" , req.method(),req.url(),(end- begin));
+		});
+		app.use(Pattern.compile("^/admin/.*$"),(req,res,next)->{
+			System.out.println(req.get("cookie"));
+			next.apply();
 		});
 		app.use(new Static("/").apply());
 		app.use(new BodyParser().apply());
@@ -32,7 +39,7 @@ public class TestJettyApp {
 		app.get("/", (req,res)->{
 			res.send("hello");
 		});
-		app.get("/:name", (req,res)->{
+		app.get("/main/:name", (req,res)->{
 			
 			if(req.session().contains("count")){
 				req.session().set("count", (Integer)(req.session().get("count"))+1);

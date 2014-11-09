@@ -27,11 +27,14 @@ public class Path {
 		}
 		return "^"+path+"$";
 	}
+	public static Pattern pathToPattern(String path){
+		return Pattern.compile(pathToReg(path));
+	}
+	
 	
 	public static final Pattern GROUP_REG = Pattern.compile("\\((\\?\\<(.+?)\\>)?.*?\\)");
 	
 	public static Map<String, String> match(Pattern pattern ,String path){
-		System.out.println("match "+pattern+" "+path);
 		Matcher matcher = pattern.matcher(path);
 		if(!matcher.find()){
 			return null;

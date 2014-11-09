@@ -10,19 +10,19 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 public class ServletRequest implements Request {
-	
+
 	public Session session;
 
 	protected HttpServletRequest req;
 	/**
 	 * user defined varibles
 	 */
-	protected Map<Object ,Object> var = new HashMap<>();
+	protected Map<Object, Object> var = new HashMap<>();
 	/**
 	 * url params
 	 */
 	protected Map<String, String> params;
-	
+
 	/**
 	 * query strings
 	 */
@@ -34,30 +34,33 @@ public class ServletRequest implements Request {
 	/**
 	 * post files
 	 */
-	protected Map<String,List<FileField>> files; 
-	
+	protected Map<String, List<FileField>> files;
+
+	protected String url;
+
 	public ServletRequest() {
 	}
-	
+
 	public ServletRequest(HttpServletRequest req) {
 		this.req = req;
+		this.url = this.req.getRequestURI();
 	}
 
 	@Override
 	public String getParam(String name, String... defaultValue) {
 		String value = params.get(name);
-		if(null == value){
+		if (null == value) {
 			value = this.query(name);
 		}
-		if(null ==value){
+		if (null == value) {
 			value = this.body(name);
 		}
-		if(null == value && defaultValue.length>0){
+		if (null == value && defaultValue.length > 0) {
 			value = defaultValue[0];
 		}
 		return value;
 	}
-	
+
 	@Override
 	public String param(String name) {
 		return params.get(name);
@@ -67,22 +70,21 @@ public class ServletRequest implements Request {
 	public String query(String name) {
 		return this.queries(name).get(0);
 	}
-	
 
 	@Override
 	public String body(String name) {
 		return this.bodies(name).get(0);
 	}
-	
+
 	@Override
-	public Map<String,String> body() {
+	public Map<String, String> body() {
 		Map<String, String> result = new HashMap<>(this.fields.size());
-		for(Entry<String, List<String>> item : this.fields.entrySet()){
-			result.put(item.getKey(), item.getValue().isEmpty()?null:item.getValue().get(0));
+		for (Entry<String, List<String>> item : this.fields.entrySet()) {
+			result.put(item.getKey(), item.getValue().isEmpty() ? null : item
+					.getValue().get(0));
 		}
 		return result;
 	}
-
 
 	@Override
 	public Route route(String name) {
@@ -91,11 +93,11 @@ public class ServletRequest implements Request {
 
 	@Override
 	public Cookie cookie(String name) {
-		if(null == this.req.getCookies()){
+		if (null == this.req.getCookies()) {
 			return null;
 		}
-		for(Cookie cookie: this.req.getCookies()){
-			if(cookie.getName().equals(name)){
+		for (Cookie cookie : this.req.getCookies()) {
+			if (cookie.getName().equals(name)) {
 				return cookie;
 			}
 		}
@@ -176,7 +178,8 @@ public class ServletRequest implements Request {
 
 	@Override
 	public boolean xhr() {
-		return "XMLHttpRequest".equalsIgnoreCase(req.getHeader("X-Requested-With"));
+		return "XMLHttpRequest".equalsIgnoreCase(req
+				.getHeader("X-Requested-With"));
 	}
 
 	@Override
@@ -216,7 +219,6 @@ public class ServletRequest implements Request {
 		return req.getMethod();
 	}
 
-
 	@Override
 	public HttpServletRequest req() {
 		return this.req;
@@ -245,18 +247,18 @@ public class ServletRequest implements Request {
 	@Override
 	public List<String> getParams(String name) {
 		String param = this.param(name);
-		if(null!=param){
+		if (null != param) {
 			List<String> result = new ArrayList<String>(1);
 			result.add(param);
 			return result;
 		}
-		List<String> result  = null;
+		List<String> result = null;
 		result = queries(name);
-		if(null!= result && !result.isEmpty()){
+		if (null != result && !result.isEmpty()) {
 			return result;
 		}
 		result = bodies(name);
-		if(null!= result && !result.isEmpty()){
+		if (null != result && !result.isEmpty()) {
 			return result;
 		}
 		return null;
@@ -318,9 +320,18 @@ public class ServletRequest implements Request {
 	}
 
 	@Override
-	public void setFiles(Map<String,List<FileField>> files) {
+	public void setFiles(Map<String, List<FileField>> files) {
 		this.files = files;
 	}
-	
+
+	@Override
+	public String url() {
+		return this.url;
+	}
+
+	@Override
+	public String url(String url) {
+		return this.url = url;
+	}
 
 }

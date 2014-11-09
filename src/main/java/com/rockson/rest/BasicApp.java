@@ -1,12 +1,10 @@
 package com.rockson.rest;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -18,7 +16,7 @@ public interface BasicApp extends App {
 	// url -> method -> handles
 	Map<String, Map<String, Handle>> getHandles();
 	List<PatternHandle> getPatternHandles();
-	Map<String, String> getEnv();
+	Map<String, Object> getEnv();
 
 	default void doMiddle(ServletRequest req, ServletResponse res, Next next) {
 		List<Middleware> middlewares = getMiddlewares();
@@ -44,14 +42,12 @@ public interface BasicApp extends App {
 			handle = methodHandles.get(req.method());
 		}
 		if (null != handle) {
-			System.out.println("match method"+req.method());
 			handle.apply(req, res);
 			return;
 		}
 		for (PatternHandle patternHandle : patternHandles) {
 			Map<String, String> params = patternHandle.match(req.method(), req.path());
 			if (null != params) {
-				System.out.println("match pattern "+ patternHandle);
 				req.setParams(params);
 				patternHandle.handle.apply(req, res);
 				break;
@@ -59,8 +55,7 @@ public interface BasicApp extends App {
 		}
 	}
 
-	default void exec(HttpServletRequest request,
-			HttpServletResponse response) throws IOException, ServletException {
+	default void handle(HttpServletRequest request,	HttpServletResponse response) {
 		ServletRequest req = new ServletRequest(request);
 		ServletResponse res = new ServletResponse(response);
 		Next next = new Next();
@@ -87,32 +82,36 @@ public interface BasicApp extends App {
 
 	@Override
 	default void enable(String name) {
-		
+		getEnv().put(name ,true);
 	}
 
 	@Override
-	default void enabled(String name) {
-		
+	default boolean enabled(String name) {
+		return (Boolean)getEnv().get(name);
 	}
 
 	@Override
 	default void disable(String name) {
-
+		getEnv().put(name, false);
 	}
 
 	@Override
-	default void disabled(String name) {
-
+	default boolean disabled(String name) {
+		return !(Boolean)getEnv().get(name);
 	}
-
+	
 	@Override
 	default void use(String path, Middle middle) {
-		getMiddlewares().add(new Middleware(null, path, middle));
+		getMiddlewares().add(new Middleware(null, Path.pathToPattern(path), middle));
+	}
+	@Override
+	default void use(Pattern pathPattern, Middle middle) {
+		getMiddlewares().add(new Middleware(null, pathPattern, middle));
 	}
 
 	@Override
 	default void use(String method, String path, Middle middle) {
-		getMiddlewares().add(new Middleware(null == method ? null : method.toUpperCase(), path, middle));
+		getMiddlewares().add(new Middleware(null == method ? null : method.toUpperCase(), Path.pathToPattern(path), middle));
 	}
 
 	@Override
@@ -121,34 +120,10 @@ public interface BasicApp extends App {
 	}
 
 	@Override
-	default void engine(String path) {
-
+	default Map<String, Map<String, Handle>> routes() {
+		return getHandles();
 	}
 
-	@Override
-	default void param(String path) {
-
-	}
-
-	@Override
-	default void routing(String path) {
-
-	}
-
-	@Override
-	default void route(String path) {
-
-	}
-
-	@Override
-	default void locales(String path) {
-
-	}
-
-	@Override
-	default void render(String path) {
-
-	}
 
 	@Override
 	default void path(String path) {
@@ -156,14 +131,15 @@ public interface BasicApp extends App {
 	}
 
 	@Override
-	default void mountPath(String path) {
-
+	default void mountPath(String path, App app) {
+		
 	}
 
 	@Override
-	default void onMount(String path) {
+	default void onMount(OnMount callback) {
 
 	}
+	
 
 	@Override
 	default void get(String path, Handle handle) {

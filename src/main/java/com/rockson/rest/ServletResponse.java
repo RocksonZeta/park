@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 
 import com.alibaba.fastjson.JSON;
-import com.rockson.rest.utils.Fn2;
 
 public class ServletResponse implements Response {
 	public final HttpServletResponse res;
@@ -113,11 +112,6 @@ public class ServletResponse implements Response {
 		res.setContentType(type);
 	}
 
-	@Override
-	public void format(Fn2<Request, Response, String> fn) {
-		// TODO Auto-generated method stub
-		
-	}
 
 	@Override
 	public HttpServletResponse res() {

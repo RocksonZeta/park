@@ -7,8 +7,6 @@ import java.util.Map;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
-import com.rockson.rest.utils.Fn2;
-
 public interface Response {
 	void status(int code);
 	void set(String field , String value);
@@ -25,7 +23,6 @@ public interface Response {
 	void jsonp(Object body);
 	void jsonp(Object body,String method);
 	void type(String type);
-	void format(Fn2<Request,Response,String> fn );
 	HttpServletResponse res();
 	void bufferSize(int size);
 	void send(InputStream in);
