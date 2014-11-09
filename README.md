@@ -9,13 +9,22 @@ Easily to construct restful app like express!
 public static void main(String[] args) {
 	App app = new JettyApp(8000);
 	app.use((req,res,next)->{
-		System.out.println(req.path()+" --->m1");
-		next.apply();
-		System.out.println(req.path()+" m1--->");
+		try{
+			next.apply();
+		} catch(Exception e){
+			System.out.println(e.getClass());
+			e.printStackTrace();
+		}
 	});
-	app.use("/haha",(req,res,next)->{
-		res.json("haha");
-//			next.apply();
+	app.use((req,res,next)->{
+		long begin = System.currentTimeMillis(); 
+		next.apply();
+		long end = System.currentTimeMillis();
+		System.out.printf("%s %s +%dms\n" , req.method(),req.url(),(end- begin));
+	});
+	app.use(Pattern.compile("^/admin/.*$"),(req,res,next)->{
+		System.out.println(req.get("cookie"));
+		next.apply();
 	});
 	app.use(new Static("/").apply());
 	app.use(new BodyParser().apply());
@@ -24,15 +33,8 @@ public static void main(String[] args) {
 	app.get("/", (req,res)->{
 		res.send("hello");
 	});
-	app.get("/:name", (req,res)->{ 
-		if(req.session().contains("count")){
-			req.session().set("count", (Integer)(req.session().get("count"))+1);
-		}else{
-			req.session().set("count", 1);
-		}
-		res.cookie("name", "jim");
-//			res.send(req.param("name")+req.session().get("count"));
-		res.render("/hello1.txt", req.params());
+	app.get("/user/:id", (req,res)->{
+		res.send(req.param("id"));
 	});
 	app.post("/test/body", (req,res)->{
 		res.json(req.body());

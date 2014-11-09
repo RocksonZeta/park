@@ -39,16 +39,8 @@ public class TestJettyApp {
 		app.get("/", (req,res)->{
 			res.send("hello");
 		});
-		app.get("/main/:name", (req,res)->{
-			
-			if(req.session().contains("count")){
-				req.session().set("count", (Integer)(req.session().get("count"))+1);
-			}else{
-				req.session().set("count", 1);
-			}
-			res.cookie("name", "jim");
-//			res.send(req.param("name")+req.session().get("count"));
-			res.render("/hello1.txt", req.params());
+		app.get("/user/:id", (req,res)->{
+			res.send(req.param("id"));
 		});
 		app.post("/test/body", (req,res)->{
 			res.json(req.body());
