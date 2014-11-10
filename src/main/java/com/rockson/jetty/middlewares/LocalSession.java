@@ -1,8 +1,13 @@
 package com.rockson.jetty.middlewares;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.http.Cookie;
 
@@ -13,11 +18,29 @@ public class LocalSession {
 	Map<String,Object> conf;
 	String sessionKey ="park-sid" ;
 	int maxAge = 24*3600;
-	Map<String,SessionStore> sessionStores = new HashMap<>();
+	final ConcurrentHashMap<String,SessionStore> sessionStores = new ConcurrentHashMap<>();
+	Timer timer = new Timer(true);
+	final int period = 60;
 
 	public LocalSession() {
+		timer.scheduleAtFixedRate(new TimerTask() {
+			@Override
+			public void run() {
+				Iterator<Entry<String, SessionStore>> iterator = sessionStores.entrySet().iterator();
+				while(iterator.hasNext()){
+					Entry<String, SessionStore> entry = iterator.next();
+					Cookie cookie = entry.getValue().cookie;
+					if(cookie.getMaxAge()<=0){
+						iterator.remove();
+					}else{
+						cookie.setMaxAge(cookie.getMaxAge()-period);
+					}
+				}
+			}
+		}, 0, period*1000);
 	}
 	public LocalSession(Map<String,Object> conf) {
+		this();
 		this.conf = conf;
 		if(conf.containsKey("sessionKey")){
 			this.sessionKey = conf.get("sessionKey").toString();

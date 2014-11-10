@@ -29,4 +29,6 @@ public interface Response {
 	void send(Reader reader);
 	void render(String tpl , Map<String, ?> data);
 	void setViewRender(ViewRender render);
+	App app();
+	void app(App app);
 }

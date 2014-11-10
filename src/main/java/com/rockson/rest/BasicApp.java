@@ -56,8 +56,8 @@ public interface BasicApp extends App {
 	}
 
 	default void handle(HttpServletRequest request,	HttpServletResponse response) {
-		ServletRequest req = new ServletRequest(request);
-		ServletResponse res = new ServletResponse(response);
+		ServletRequest req = new ServletRequest(this,request);
+		ServletResponse res = new ServletResponse(this,response);
 		Next next = new Next();
 		next.onNext(() -> {
 			this.doMiddle(req, res, next);

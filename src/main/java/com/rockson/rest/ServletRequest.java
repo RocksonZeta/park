@@ -2,6 +2,7 @@ package com.rockson.rest;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -13,6 +14,7 @@ public class ServletRequest implements Request {
 
 	public Session session;
 
+	protected App app;
 	protected HttpServletRequest req;
 	/**
 	 * user defined varibles
@@ -41,7 +43,8 @@ public class ServletRequest implements Request {
 	public ServletRequest() {
 	}
 
-	public ServletRequest(HttpServletRequest req) {
+	public ServletRequest(App app, HttpServletRequest req) {
+		this.app = app;
 		this.req = req;
 		this.url = this.req.getRequestURI();
 	}
@@ -80,8 +83,7 @@ public class ServletRequest implements Request {
 	public Map<String, String> body() {
 		Map<String, String> result = new HashMap<>(this.fields.size());
 		for (Entry<String, List<String>> item : this.fields.entrySet()) {
-			result.put(item.getKey(), item.getValue().isEmpty() ? null : item
-					.getValue().get(0));
+			result.put(item.getKey(), item.getValue().isEmpty() ? null : item.getValue().get(0));
 		}
 		return result;
 	}
@@ -110,48 +112,29 @@ public class ServletRequest implements Request {
 	}
 
 	@Override
-	public String signedCookies(String name) {
-		return null;
-	}
-
-	@Override
 	public String get(String field) {
 		return req.getHeader(field);
 	}
 
 	@Override
-	public String accepts(String types) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String acceptsCharsets(String charset, String... charsets) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String acceptsLanguages(String lang, String... langs) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public boolean is(String type) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
 	public String ip() {
-		return req.getRemoteAddr();
+		return ips().get(0);
 	}
 
 	@Override
-	public String[] ips() {
-		// TODO Auto-generated method stub
-		return null;
+	public List<String> ips() {
+		List<String> result = new LinkedList<String>();
+		if (app.enabled("trust proxy")) {
+			String forwardIpStr = get("X-Forwarded-For");
+			if (null != forwardIpStr) {
+				for (String fip : forwardIpStr.split(",")) {
+					result.add(fip.trim());
+				}
+
+			}
+		}
+		result.add(req.getRemoteAddr());
+		return result;
 	}
 
 	@Override
@@ -165,21 +148,8 @@ public class ServletRequest implements Request {
 	}
 
 	@Override
-	public boolean fresh() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean stale() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
 	public boolean xhr() {
-		return "XMLHttpRequest".equalsIgnoreCase(req
-				.getHeader("X-Requested-With"));
+		return "XMLHttpRequest".equalsIgnoreCase(req.getHeader("X-Requested-With"));
 	}
 
 	@Override
@@ -189,24 +159,12 @@ public class ServletRequest implements Request {
 
 	@Override
 	public boolean secure() {
-		return false;
-	}
-
-	@Override
-	public String[] subdomains() {
-		// TODO Auto-generated method stub
-		return null;
+		return "https".equalsIgnoreCase(protocol());
 	}
 
 	@Override
 	public String originalUrl() {
 		return this.req.getRequestURI();
-	}
-
-	@Override
-	public String baseUrl() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override
@@ -332,6 +290,16 @@ public class ServletRequest implements Request {
 	@Override
 	public String url(String url) {
 		return this.url = url;
+	}
+
+	@Override
+	public App app() {
+		return this.app;
+	}
+
+	@Override
+	public void app(App app) {
+		this.app = app;
 	}
 
 }

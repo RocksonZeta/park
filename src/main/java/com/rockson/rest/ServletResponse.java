@@ -13,13 +13,15 @@ import org.apache.commons.io.IOUtils;
 import com.alibaba.fastjson.JSON;
 
 public class ServletResponse implements Response {
-	public final HttpServletResponse res;
-	protected ViewRender viewRender; 
-	
-	public ServletResponse(HttpServletResponse response) {
+	protected App app;
+	protected HttpServletResponse res;
+	protected ViewRender viewRender;
+
+	public ServletResponse(App app, HttpServletResponse response) {
+		this.app = app;
 		this.res = response;
 	}
-	
+
 	@Override
 	public void status(int code) {
 		res.setStatus(code);
@@ -46,6 +48,7 @@ public class ServletResponse implements Response {
 	public void cookie(String name, String value, int maxAge) {
 		Cookie cookie = new Cookie(name, value);
 		cookie.setMaxAge(maxAge);
+		cookie.setPath("/");
 		this.cookie(cookie);
 	}
 
@@ -53,10 +56,12 @@ public class ServletResponse implements Response {
 	public void cookie(Cookie cookie) {
 		res.addCookie(cookie);
 	}
-
+	
 	@Override
 	public void clearCookie(String name) {
-		
+		Cookie cookie = new Cookie(name, "");
+		cookie.setMaxAge(0);
+		res.addCookie(cookie);
 	}
 
 	@Override
@@ -66,7 +71,7 @@ public class ServletResponse implements Response {
 		} catch (IOException e) {
 			throw new AppException(e);
 		}
-		
+
 	}
 
 	@Override
@@ -79,7 +84,7 @@ public class ServletResponse implements Response {
 	public void location(String location) {
 		res.setHeader("Location", location);
 	}
-	
+
 	@Override
 	public void send(String body) {
 		try {
@@ -88,7 +93,7 @@ public class ServletResponse implements Response {
 		} catch (IOException e) {
 			throw new AppException(e);
 		}
-		
+
 	}
 
 	@Override
@@ -99,19 +104,19 @@ public class ServletResponse implements Response {
 
 	@Override
 	public void jsonp(Object body) {
-		this.send("callback("+JSON.toJSONString(body)+")");
+		this.type("application/json");
+		this.send("callback(" + JSON.toJSONString(body) + ")");
 	}
-	
+
 	@Override
-	public void jsonp(Object body,String method) {
-		this.send(method+"("+JSON.toJSONString(body)+")");
+	public void jsonp(Object body, String method) {
+		this.send(method + "(" + JSON.toJSONString(body) + ")");
 	}
 
 	@Override
 	public void type(String type) {
 		res.setContentType(type);
 	}
-
 
 	@Override
 	public HttpServletResponse res() {
@@ -126,12 +131,13 @@ public class ServletResponse implements Response {
 	@Override
 	public void send(InputStream in) {
 		try {
-			IOUtils.copy(in ,res.getOutputStream());
+			IOUtils.copy(in, res.getOutputStream());
 		} catch (IOException e) {
 			throw new AppException(e);
-		}finally{
+		} finally {
 			try {
-				if(null!=in)in.close();
+				if (null != in)
+					in.close();
 			} catch (IOException e) {
 				throw new AppException(e);
 			}
@@ -144,24 +150,34 @@ public class ServletResponse implements Response {
 			IOUtils.copy(reader, res.getWriter());
 		} catch (IOException e) {
 			throw new AppException(e);
-		}finally{
+		} finally {
 			try {
-				if(null!=reader)reader.close();
+				if (null != reader)
+					reader.close();
 			} catch (IOException e) {
 				throw new AppException(e);
 			}
 		}
 	}
-	
+
 	@Override
-	public void render(String tpl , Map<String, ?> data){
+	public void render(String tpl, Map<String, ?> data) {
 		this.send(this.viewRender.render(tpl, data));
 	}
-	
+
 	@Override
 	public void setViewRender(ViewRender render) {
 		this.viewRender = render;
 	}
 
-	
+	@Override
+	public App app() {
+		return this.app;
+	}
+
+	@Override
+	public void app(App app) {
+		this.app = app;
+	}
+
 }
