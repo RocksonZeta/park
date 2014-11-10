@@ -70,7 +70,7 @@ Add a middleware with a specified pattern path for the app.
 Add a middleware with a specified path and request method for the app. 
 ###void use(String method,Pattern pathPattern ,Middle middle);
 Add a middleware with a specified pattern path and request method for the app. 
-###Map<String, Map<String, Handle>> routes()
+###Map\<String, Map\<String, Handle\>\> routes()
 Get all routes from the app.
 ###void listen()
 Start to listen an the specified port.
@@ -89,15 +89,15 @@ Get param from request body. eg. in `post body age=12. req.query('age')`.
 Get upload file object.
 ###String getParam(String name ,String... defaultValue)
 Find param in the request. find place: url params -> query -> body -> defaultValue.
-###Map<String,String> body()
+###Map\<String,String\> body()
 Get request body as map;
-###List<String> queries(String name)
+###List\<String\> queries(String name)
 Get multi-params from the url query string.
-###List<String> bodies(String name)
+###List\<String\> bodies(String name)
 Get multi-params from the request body.
-###List<FileField> files(String name)
+###List\<FileField\> files(String name)
 Get multi-params from request files.
-###List<String> getParams(String name)
+###List\<String\> getParams(String name)
 Find multi-params from request.find place: url params -> query -> body -> defaultValue.
 ###Cookie cookie(String name)
 Get a cookie
@@ -123,18 +123,18 @@ Check if a TLS connection is established. This is a short-hand for: 'https'.equa
 ###String originalUrl()
 it retains the original request url
 ###HttpServletRequest req()
-###Map<String,List<FileField>> files()
+###Map\<String,List\<FileField\>\> files()
 Get all file objects from upload files.
-###Map<String, List<String>> fields()
+###Map\<String, List\<String>> fields()
 Get all params from the body.
-###Map<String, List<String>> queries()
+###Map\<String, List\<String\>\> queries()
 Get all params from url query.
-###Map<String, String> params()
+###Map\<String, String\> params()
 Get all params from url params.
 ###Session session()
 request Session
 ###void session(Session session)
-###Map<Object , Object> var()
+###Map\<Object , Object\> var()
 Get all varibles.
 ###Object var(Object key)
 Get varible from request's variables.
@@ -145,10 +145,10 @@ Set varible from request's variables.
 
 For extends only
 ----------------
-###void setParams(Map<String, String> params)
-###void setQueries(Map<String, List<String>> queries)
-###void setFields(Map<String, List<String>> fields)
-###void setFiles(Map<String, List<FileField>> files)
+###void setParams(Map\<String, String\> params)
+###void setQueries(Map\<String, List\<String\>\> queries)
+###void setFields(Map\<String, List\<String\>\> fields)
+###void setFiles(Map\<String, List\<FileField\>\> files)
 
 
 interface Response
@@ -190,7 +190,7 @@ set content type.
 ###HttpServletResponse res()
 ###void bufferSize(int size)
 set response bufferSize.
-###void render(String tpl , Map<String, ?> data)
+###void render(String tpl , Map\<String, ?\> data)
 Render a view with data.
 
 used by middleware
