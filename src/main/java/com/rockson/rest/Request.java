@@ -17,7 +17,6 @@ public interface Request {
 	List<String> queries(String name);
 	List<String> bodies(String name);
 	List<FileField> files(String name);
-	Route route(String name);
 	Cookie cookie(String name);
 	Cookie[] cookies();
 	String method();
@@ -29,8 +28,6 @@ public interface Request {
 	boolean xhr();
 	String protocol();
 	boolean secure();
-	String url();
-	String url(String url);
 	String originalUrl();
 	HttpServletRequest req();
 	Map<String,List<FileField>> files();
@@ -49,6 +46,7 @@ public interface Request {
 	void setQueries(Map<String, List<String>> queries);
 	void setFields(Map<String, List<String>> fields);
 	void setFiles(Map<String, List<FileField>> files);
+	void path(String path);
 	
 	
 }

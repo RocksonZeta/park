@@ -38,7 +38,7 @@ public class ServletRequest implements Request {
 	 */
 	protected Map<String, List<FileField>> files;
 
-	protected String url;
+	protected String path;
 
 	public ServletRequest() {
 	}
@@ -46,7 +46,7 @@ public class ServletRequest implements Request {
 	public ServletRequest(App app, HttpServletRequest req) {
 		this.app = app;
 		this.req = req;
-		this.url = this.req.getRequestURI();
+		this.path = this.req.getRequestURI();
 	}
 
 	@Override
@@ -89,11 +89,6 @@ public class ServletRequest implements Request {
 	}
 
 	@Override
-	public Route route(String name) {
-		return null;
-	}
-
-	@Override
 	public Cookie cookie(String name) {
 		if (null == this.req.getCookies()) {
 			return null;
@@ -124,7 +119,7 @@ public class ServletRequest implements Request {
 	@Override
 	public List<String> ips() {
 		List<String> result = new LinkedList<String>();
-		if (app.enabled("trust proxy")) {
+		if (app.enabled(App.TrustProx)) {
 			String forwardIpStr = get("X-Forwarded-For");
 			if (null != forwardIpStr) {
 				for (String fip : forwardIpStr.split(",")) {
@@ -139,7 +134,12 @@ public class ServletRequest implements Request {
 
 	@Override
 	public String path() {
-		return this.req.getRequestURI();
+		return this.path;
+	}
+	
+	@Override
+	public void path(String path) {
+		this.path = path;
 	}
 
 	@Override
@@ -154,7 +154,14 @@ public class ServletRequest implements Request {
 
 	@Override
 	public String protocol() {
-		return this.req.getProtocol();
+		String protocol = null;
+		if (app.enabled(App.TrustProx)) {
+			protocol = get("X-Forwarded-Proto");
+		}
+		if(null == protocol){
+			protocol = req.getProtocol();
+		}
+		return protocol;
 	}
 
 	@Override
@@ -280,16 +287,6 @@ public class ServletRequest implements Request {
 	@Override
 	public void setFiles(Map<String, List<FileField>> files) {
 		this.files = files;
-	}
-
-	@Override
-	public String url() {
-		return this.url;
-	}
-
-	@Override
-	public String url(String url) {
-		return this.url = url;
 	}
 
 	@Override

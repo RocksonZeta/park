@@ -113,6 +113,10 @@ public interface BasicApp extends App {
 	default void use(String method, String path, Middle middle) {
 		getMiddlewares().add(new Middleware(null == method ? null : method.toUpperCase(), Path.pathToPattern(path), middle));
 	}
+	@Override
+	default void use(String method, Pattern pathPattern, Middle middle) {
+		getMiddlewares().add(new Middleware(null == method ? null : method.toUpperCase(),pathPattern, middle));
+	}
 
 	@Override
 	default void use(Middle middle) {
@@ -123,23 +127,6 @@ public interface BasicApp extends App {
 	default Map<String, Map<String, Handle>> routes() {
 		return getHandles();
 	}
-
-
-	@Override
-	default void path(String path) {
-
-	}
-
-	@Override
-	default void mountPath(String path, App app) {
-		
-	}
-
-	@Override
-	default void onMount(OnMount callback) {
-
-	}
-	
 
 	@Override
 	default void get(String path, Handle handle) {

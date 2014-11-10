@@ -14,7 +14,7 @@ import com.rockson.rest.App;
 public class TestJettyApp {
 
 	public static void main(String[] args) {
-		App app = new JettyApp(8000);
+		App app = new JettyApp(8080);
 		app.use((req,res,next)->{
 			try{
 				next.apply();
@@ -27,7 +27,7 @@ public class TestJettyApp {
 			long begin = System.currentTimeMillis(); 
 			next.apply();
 			long end = System.currentTimeMillis();
-			System.out.printf("%s %s +%dms\n" , req.method(),req.url(),(end- begin));
+			System.out.printf("%s %s +%dms\n" , req.method(),req.path(),(end- begin));
 		});
 		app.use(Pattern.compile("^/admin/.*$"),(req,res,next)->{
 			System.out.println(req.cookies()[0].getValue());

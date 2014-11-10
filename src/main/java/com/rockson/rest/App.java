@@ -17,18 +17,14 @@ public interface App extends Rest {
 	boolean disabled(String name );
 	void use(Middle middle);
 	void use(String path ,Middle middle);
-	void use(Pattern path ,Middle middle);
+	void use(Pattern pathPattern ,Middle middle);
 	void use(String method,String path ,Middle middle);
+	void use(String method,Pattern pathPattern ,Middle middle);
 	Map<String, Map<String, Handle>> routes();
 	void listen();
-	void path(String path );
-	void mountPath(String path, App app);
-	void onMount(OnMount callback);
 	void handle(HttpServletRequest request,HttpServletResponse response);
 	
-	@FunctionalInterface
-	public static interface OnMount {
-		void apply(App parentApp);
-	}
-
+	
+	static final String TrustProx = "trust proxy";
+	
 }
