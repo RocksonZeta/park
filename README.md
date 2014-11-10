@@ -204,26 +204,31 @@ Middleware
 =========
 Frequently-used middlewares
 ###BodyParser
+To parse post body and upload files.
 constructor:
 -----------
-####BodyParser(Map<String, Object> conf)
+####BodyParser(Map\<String, Object\> conf)
 
 ###LocalSession
+Provide session locally.
 constructor: 
 -----------
-####LocalSession(Map<String,Object> conf)
-
-###ParkFreeMarker
-constructor:
------------
-####ParkFreeMarker(Map<String, Object> conf)
+####LocalSession(Map\<String,Object\> conf)
 
 ###RedisSession
+Using Redis store as session store.
 constructor:
 -----------
-####RedisSession(String host, int port , Map<String, Object> conf)
+####RedisSession(String host, int port , Map\<String, Object\> conf)
+
+###ParkFreeMarker
+Use freemarker as a render.
+constructor:
+-----------
+####ParkFreeMarker(Map\<String, Object\> conf)
 
 ###Static
+Enable app has a static resource server ability.
 constructor:
 -----------
 Static(String dir)
