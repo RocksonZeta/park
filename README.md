@@ -77,7 +77,7 @@ Start to listen an the specified port.
 ###void handle(HttpServletRequest request,HttpServletResponse response)
 If we want create own http server, we must implement this function to handle all requests. 
 
-interface Reqest
+interface Request
 ================
 ###String param(String name)
 Get param from url params. eg. in `/user/:id. req.param("id")`.
