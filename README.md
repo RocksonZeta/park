@@ -202,6 +202,35 @@ used by middleware
 
 Middleware
 =========
+Frequently-used middlewares
+###BodyParser
+constructor:
+-----------
+####BodyParser(Map<String, Object> conf)
+
+###LocalSession
+constructor: 
+-----------
+####LocalSession(Map<String,Object> conf)
+
+###ParkFreeMarker
+constructor:
+-----------
+####ParkFreeMarker(Map<String, Object> conf)
+
+###RedisSession
+constructor:
+-----------
+####RedisSession(String host, int port , Map<String, Object> conf)
+
+###Static
+constructor:
+-----------
+Static(String dir)
+
+
+how to write a middleware
+-----------------------
 To write middleware is simple.app's middlewares like a stack execute orderly. Basic example:
 ```java
 public class MyMiddleware {
