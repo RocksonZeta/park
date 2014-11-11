@@ -20,7 +20,7 @@ public static void main(String[] args) {
 		long begin = System.currentTimeMillis(); 
 		next.apply();
 		long end = System.currentTimeMillis();
-		System.out.printf("%s %s +%dms\n" , req.method(),req.url(),(end- begin));
+		System.out.printf("%s %s +%dms\n" , req.method(),req.path(),(end- begin));
 	});
 	app.use(Pattern.compile("^/admin/.*$"),(req,res,next)->{
 		System.out.println(req.get("cookie"));
