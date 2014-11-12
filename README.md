@@ -1,5 +1,6 @@
 park
 ====
+[![Build Status](https://travis-ci.org/RocksonZeta/park.svg?branch=master)](https://travis-ci.org/RocksonZeta/park)
 
 Easily to construct restful app like express!
 
