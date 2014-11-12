@@ -7,7 +7,7 @@
 	<version>0.0.1</version>
 	<packaging>jar</packaging>
 
-	<name>jrest</name>
+	<name>park</name>
 	<url>http://maven.apache.org</url>
 
 	<properties>
@@ -45,9 +45,6 @@
 			<artifactId>freemarker</artifactId>
 			<version>2.3.21</version>
 		</dependency>
-
-
-
 	</dependencies>
 	<build>
 		<plugins>

@@ -6,9 +6,6 @@ import java.util.UUID;
 
 import javax.servlet.http.Cookie;
 
-import org.apache.commons.pool2.PooledObjectFactory;
-import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
-
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
